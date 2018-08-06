@@ -1,3 +1,9 @@
 paper/
 *.fits
-
+*.pdf
+*.fit
+*.p
+*.pkl
+*.ipynb
+*.png
+*.DS*
