@@ -6,8 +6,8 @@ import astropy.units as u
 ungerechts_omc1_ra = [83.85105467*u.deg, 83.77605467*u.deg]
 ungerechts_omc1_dec = [-5.492928*u.deg, -5.292928*u.deg]
 ## From Berne et al. 2014 IRAM survey of Orion A
-berne_dec = [-5.8*u.deg, -4.95*u.deg]
-berne_ra = [5.62*15*u.deg, 5.554*15*u.deg]
+# berne_dec = [-5.8*u.deg, -4.95*u.deg]
+# berne_ra = [5.62*15*u.deg, 5.554*15*u.deg]
 ## From Feddersen et al. 2018, Expanding Shells in Orion A
 jrf_north_ra = [84.39490277777777*u.deg, 83.27602222222221*u.deg]
 jrf_north_dec = [-5.323802777777778*u.deg, -4.805402777777778*u.deg]
@@ -38,7 +38,7 @@ davis_v380_dec = [-6.91666667*u.deg, -6.616666667*u.deg]
 
 regions_ra = [
     ungerechts_omc1_ra, 
-    berne_ra, 
+    # berne_ra, 
     jrf_north_ra, 
     jrf_central_ra, 
     jrf_south_ra, 
@@ -54,7 +54,7 @@ regions_ra = [
 
 regions_dec = [
     ungerechts_omc1_dec, 
-    berne_dec, 
+    # berne_dec, 
     jrf_north_dec, 
     jrf_central_dec, 
     jrf_south_dec, 
@@ -69,7 +69,7 @@ regions_dec = [
     ]
 regions_name = [
    'ungerechts_omc1', 
-   'berne', 
+   # 'berne', 
    'jrf_north', 
    'jrf_central', 
    'jrf_south', 

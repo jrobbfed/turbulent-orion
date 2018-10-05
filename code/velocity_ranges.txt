@@ -1,0 +1,47 @@
+region blue_range central_range red_range
+jrf_north [7.81,9.06] [9.06,12.82] [12.82,14.07]
+jrf_central [5.81,7.81] [8.06,11.81] [12.06,14.07]
+jrf_south [5.06,6.31] [6.31,10.31] [10.31,11.56]
+jrf_l1641n [4.31,5.56] [6.56,7.81] [10.81,12.06]
+jrf_l1641n [4.31,5.56] [8.56,9.81] [10.31,11.56]
+
+#
+#
+#North Region 
+# Vo (central velocity) ~ 10.7 km/s
+#
+# 12CO and 13CO:
+#   Blue :  7.81 -  9.06 km/s (channels 40 - 45)
+#   Red  : 12.82 - 14.07 km/s (channels 60 - 65)
+#
+#———————————————————————————
+#Central Region
+# 
+# Vo ~ 10 km/s
+#
+#12CO and 13CO
+#Blue    :  5.81 -  7.81 km/s (channels 32 - 40)
+#Central :  8.06 - 11.81 km/s (channels 41 - 56)
+#Red     : 12.06 - 14.07 km/s (channels 57 - 65)
+#
+#——————————————————————————
+#South Region
+#  Vo ~ 9 km/s
+#
+# 13CO 
+#  Blue :  5.06 -  6.31 km/s (channels 28 - 34)
+#  Red  : 10.31 - 11.56 km/s (channels 50 - 55) 
+# 
+#
+#————————————————————————————
+#L1641N Region
+#   Vo ~ 7 km/s (around L1641N cluster)
+#   Vo ~ 8.5 km/s (around HH 34 region)
+#   Vo ~ 8.6 km/s (around NGC1999 region)
+#
+# 13CO and 12CO
+#  Blue:       4.31 -  5.56 km/s (channels 26 - 31) 
+#  Red :      10.81 - 12.06 km/s (channels 52 - 57)
+#  Central 1:  6.56 -  7.81 km/s (channels 35 - 40)  (for L1641N cluster region)
+#  Central 2:  8.56 -  9.81 km/s (channels 43 - 48)  (for NGC1999 region)
+#  Red 2 :    10.31 - 11.56 km/s (channels 50 - 55)  (for NGC1999 region)
