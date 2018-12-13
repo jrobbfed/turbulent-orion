@@ -31,8 +31,17 @@ def main():
     mols = ["12co", "13co", "c18o"]
     region = "jrf_l1641n"
 
-    pspec_noise(run_kwargs={'verbose':True})
+    # pspec_noise(run_kwargs={'verbose':True})
+    # pspec_noise(cube="../subcubes/12co_davis_hh34.fits", vel_low = -2*u.km/u.s, vel_hi=2*u.km/u.s,
+    #      run_kwargs={'verbose':True}, pspec_file="pspec_noise_12co_hh34")
+    pspec_noise(cube="../subcubes/13co_jrf_l1641n.fits", vel_low = 13*u.km/u.s, vel_hi=16*u.km/u.s,
+         run_kwargs={'verbose':True}, pspec_file="pspec_noise_13co_l1641n")
+    
 
+    
+
+    # plot_pspec("pspec_noise_12co_hh34.pkl", save_fig="pspec_noise_12co_hh34.png")
+    # plot_pspec("pspec_noise_13co_l1641n.pkl", save_fig="pspec_noise_13co_l1641n.png")
     # for mol in mols:
     #     basename = "{}_{}".format(mol, region) 
     #     file = "../subcubes/{}.fits".format(basename)

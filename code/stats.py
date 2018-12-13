@@ -1,3 +1,5 @@
+#Search "paper" to find the code blocks which generate figures for the paper.
+
 import numpy as np
 import astropy.units as u
 import pickle
@@ -14,30 +16,67 @@ from astropy.io import ascii
 import astropy
 from turbustat.statistics import VCS
 from turbustat.statistics import PowerSpectrum 
+from turbustat.statistics import SCF 
+from turbustat.statistics import PCA 
 
 distance = 414*u.pc
 
 def main():
+    
+    
 
     high_cut = 0.04/u.pix
     high_cut_12co = 0.04/u.pix
     high_cut_13co = 0.04/u.pix
     high_cut_c18o = 0.025/u.pix
 
-    refit = True
-    pspec_str = "beamcorrect_apodizetukey"
+    refit = False
+    pspec_str = "beamcorrect_apodizetukey_fit"
+    scf_str = "fit5to17"
+    plot_str = "_beamcorrect_apodizetukey_pspechighcut_scf5to17pix"
     if refit:
         refit_str = "_beamcorrect_apodizetukey_pspechighcut{}".format(high_cut.value)
     else:
         refit_str = "_beamcorrect_apodizetukey"
 
+    region_labels = ["North", "Central", "South", "L1641N",
+            "Davis NGC1977", "Davis OMC23", "Ungerechts OMC1", "Davis OMC4",
+            "Davis OMC5", "Davis HH34", "Davis L1641N", "Davis V380"]
+
+    region_markers = {"jrf_north": "o", "jrf_central": "^", "jrf_south":"s", "jrf_l1641n":"D",
+        "davis_ngc1977":"o", "davis_omc23":"o", "ungerechts_omc1":"^",
+        "davis_omc4":"s", "davis_omc5":"s", "davis_hh34":"D", "davis_l1641n":"D", "davis_v380":"D"}
+
+    region_edgecolors = {"jrf_north": "k", "jrf_central": "k", "jrf_south":"k", "jrf_l1641n":"k",
+        "davis_ngc1977":"k", "davis_omc23":"tab:red",
+        "ungerechts_omc1":"k",
+        "davis_omc4":"k", "davis_omc5":"tab:red",
+        "davis_hh34":"k", "davis_l1641n":"tab:red", "davis_v380":"tab:blue"}
+
+    region_facecolors = {"jrf_north": "w", "jrf_central": "w", "jrf_south":"w", "jrf_l1641n":"w",
+        "davis_ngc1977":"k", "davis_omc23":"tab:red",
+        "ungerechts_omc1":"k",
+        "davis_omc4":"k", "davis_omc5":"tab:red",
+        "davis_hh34":"k", "davis_l1641n":"tab:red", "davis_v380":"tab:blue"}
+
+    region_ecolors = region_edgecolors
+### Plot C18O Noise power spectrum of jrf_l1641n
     
+    # file = '/Users/jesse/repos/turbulent-orion/code/pspec_test/pspec_noise_c18o_jrf_l1641n.pkl'
+    # ax = plot_pspec(file, line=False, scatter_kwargs={'s':10, 'color':'black'})a
+    # plt.tight_layout()
+    # plt.savefig("/Users/jesse/repos/turbulent-orion/paper/figures/pspec_noise_c18o_jrf_l1641n.png", dpi=200)
+    
+
+
+ 
 ### Plotting scatter plots of SCF and PSPEC slopes versus 
-### surface density of YSOs (from Spitzer Orion) in Orion A regions.
+### surface density of YSOs (from Spitzer Orion) in Orion A regions.a
 # stat_list = glob("scf_results/scf_13co*davis*.p") +\
 #         glob("scf_results/scf_13co*unger*.p")
 # plot_stat_feedback(stat_list, plot_file="scf_13co_davis_nstars.pdf")
-##Figure in paper.
+
+##Run this block of code to generate a figure in paper.
 
 
     mols = ["12co", "13co", "c18o"]
@@ -49,15 +88,17 @@ def main():
 
     stat_names = ["scf", "pspec"]
 
-
-    ytick_arr = np.array(
-            [[[-0.10,-0.15],
-              [-0.10,-0.20],
-              [-0.20,-0.30]],
-             [[-3.0,-4.0],
-              [-3.0,-3.5],
-              [-3.2,-3.6]]])
     
+    ytick_arr = np.array(
+            [[[-0.06,-0.08,-0.10,-0.12,-0.14],
+              [-0.05,-0.10, -0.15,-0.20],
+              [0.15,0, -0.15,-0.30]],
+             [[-3.0,-3.5,-4.0,-4.5],
+              [-3.0,-3.5,-4.0],
+              [-2.5,-3.0,-3.5]]])
+   
+    label_size = 16
+
     # vcs = "vcs_results/vcs_12co_jrf_south.p"
     # plot_vcs_spectrum(vcs, ax=None, return_ax=False, plot_file="vcs_spectrum.pdf",
     #     mpl_style='presentation',
@@ -80,13 +121,30 @@ def main():
     #         if stat_name == 'pspec':
     #             stat_list = glob("{}_results/{}_{}*_{}*.p".format(
     #             stat_name, stat_name, mol, pspec_str))
-    #         else:
-    #             stat_list = glob("{}_results/{}_{}*.p".format(
-    #                 stat_name, stat_name, mol))
+    #             stat_str = pspec_str
+    #         elif stat_name == 'scf':
+    #             stat_list = glob("{}_results/{}_{}*_{}*.p".format(
+    #                 stat_name, stat_name, mol, scf_str))
+    #             stat_str = scf_str
+                
+    #         region_names = [stat_list.split(mol+"_")[1].split("_"+stat_str)[0] for stat_list in stat_list]
+    #         markers = [region_markers[x] for x in region_names]
+    #         edgecolors = [region_edgecolors[x] for x in region_names]
+    #         facecolors = [region_facecolors[x] for x in region_names]
             
+    #         print(region_names)
+            
+
     #         ii_davis = ["davis" in stat_file for stat_file in stat_list]
-    #         colors = np.array(['0.7'] * len(stat_list))
-    #         colors[ii_davis] = '0.1'
+    #         ii_omc1 = ["omc1" in stat_file for stat_file in stat_list]
+    #         # colors = np.array(['0.7'] * len(stat_list))
+    #         # colors[ii_davis] = '0.1'
+    #         # colors[ii_omc1] = '0.1'
+    #         # print(ii_davis, ii_omc1)
+
+    #         # facecolors = np.array(['0.7']*len(stat_list))
+    #         # facecolors[ii_omc1] = '1.0'
+    #         # facecolors[ii_davis] = '0.1'
  
     #         if mol == 'c18o':
     #             high_cut = high_cut_c18o 
@@ -95,17 +153,31 @@ def main():
     #         elif mol == '13co':
     #             high_cut = high_cut_13co
 
-    #         ax = plot_stat_feedback(stat_list, ax=ax, return_ax=True,
+    #         # ax = plot_stat_feedback(stat_list, ax=ax, return_ax=True,
+    #         #         surface_density=True, feedback_label=r"n$_{\rm YSO}$ (deg$^{-2}$)",
+    #         #         logx=True, errorbar_kwargs={'ecolor':colors, 'linewidth':2},
+    #         #         scatter_kwargs={'color':colors, 's':30}, within_data=True,
+    #         #         refit=stat_name is 'pspec',
+    #         #         refit_kwargs_list=[{"high_cut":high_cut}]*len(stat_list))
+    #         print(stat_list)
+
+    #         if icol == 0 and irow <= 1:
+    #             test=False
+    #         else:
+    #             test=False
+    #         ax = plot_stat_feedback(stat_list, test=test, ax=ax, return_ax=True,
     #                 surface_density=True, feedback_label=r"n$_{\rm YSO}$ (deg$^{-2}$)",
-    #                 logx=True, errorbar_kwargs={'ecolor':colors, 'linewidth':2},
-    #                 scatter_kwargs={'color':colors, 's':30}, within_data=True,
-    #                 refit=stat_name is 'pspec',
-    #                 refit_kwargs_list=[{"high_cut":high_cut}]*len(stat_list))
-            
+    #                 label_kwargs={'size':label_size},
+    #                 logx=True, errorbar_kwargs={'ecolor':edgecolors, 'linewidth':2},
+    #                 scatter_kwargs={'edgecolor':edgecolors, 'facecolor':facecolors, 's':60}, within_data=True,
+    #                 marker=markers,
+    #                 refit=False, plot_file="dumb.png",
+    #                 refit_kwargs_list=[{"high_cut":16.6*u.pix}]*len(stat_list))
+
     #         ax.set_yticks(ytick_arr[icol,irow])
 
     #         mol_label = mols_dict[mol]
-    #         ax.annotate(mol_label, (0.5, 0.9), 
+    #         ax.annotate(mol_label, (0.55, 0.9), 
     #                 size=14, xycoords="axes fraction")
 
     #         if icol == 0:
@@ -118,11 +190,11 @@ def main():
 
     # # ax1.set_xlabel('')
     # # plt.tight_layout()
-    # plt.savefig("slope_nstars_logdensity{}.pdf".format(refit_str))
+    # plt.savefig("slope_nstars_logdensity{}_colors.pdf".format(plot_str))
     # plt.close()
 
-### Plotting scatter plots of SCF and PSPEC slopes versus 
-### number of YSOs (from Spitzer Orion) in Orion A regions.
+## Plotting scatter plots of SCF and PSPEC slopes versus 
+## number of YSOs (from Spitzer Orion) in Orion A regions.
 
     # f, axarr = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=False,
     #         figsize=(9,9.5))
@@ -223,12 +295,12 @@ def main():
     # plt.savefig("slope_surface_area{}.pdf".format(refit_str))
     # plt.close()  
 
-## Plotting scatter plots of SCF and PSPEC slopes versus 
-## outflow pdot surface density in Orion A regions.
-
+# Plotting scatter plots of SCF and PSPEC slopes versus 
+# outflow pdot surface density in Orion A regions.
+##Run this block of code to generate a figure in paper.
     # f, axarr = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=False,
-    #         figsize=(9.5,9.5))
-    # f.subplots_adjust(hspace=0, wspace=0.5)
+    #         figsize=(9,9.5))
+    # f.subplots_adjust(hspace=0, wspace=0.4)
    
     # #Iterate over each row.
     # for irow, axrow, mol in zip(
@@ -237,17 +309,40 @@ def main():
     #     for icol, ax, stat_name in zip(
     #             range(len(stat_names)), axrow, stat_names):
 
+            
     #         if stat_name == 'pspec':
     #             stat_list = glob("{}_results/{}_{}*_{}*.p".format(
     #             stat_name, stat_name, mol, pspec_str))
-    #         else:
-    #             stat_list = glob("{}_results/{}_{}*.p".format(
-    #                 stat_name, stat_name, mol))
+    #             stat_str = pspec_str
+    #         elif stat_name == 'scf':
+    #             stat_list = glob("{}_results/{}_{}*_{}*.p".format(
+    #                 stat_name, stat_name, mol, scf_str))
+    #             stat_str = scf_str
 
+    #         region_names = [stat_list.split(mol+"_")[1].split("_"+stat_str)[0] for stat_list in stat_list]
+    #         markers = [region_markers[x] for x in region_names]
+    #         edgecolors = [region_edgecolors[x] for x in region_names]
+    #         facecolors = [region_facecolors[x] for x in region_names]
+            
+    #         #The outflow values for the jrf_central and ungerechts_omc1 are lower limits because Tanabe's study
+    #         #purposefully excludes OMC1 in their outflow search.
+    #         ii_lowerlimit = ["central" in stat_file or "omc1" in stat_file for stat_file in stat_list]
     #         ii_davis = ["davis" in stat_file for stat_file in stat_list]
-    #         colors = np.array(['0.7'] * len(stat_list))
-    #         colors[ii_davis] = '0.1'
+    #         ii_omc1 = ["omc1" in stat_file for stat_file in stat_list]
+        
 
+        
+    #         # colors = np.array(['0.7'] * len(stat_list))
+    #         # colors[ii_davis] = '0.1'
+    #         # colors[ii_omc1] = '0.1'
+    #         # print(ii_davis, ii_omc1)
+
+    #         # facecolors = np.array(['0.7']*len(stat_list))
+    #         # facecolors[ii_omc1] = '1.0'
+    #         # facecolors[ii_davis] = '0.1'
+
+    #         # print(colors, facecolors)
+            
     #         if mol == 'c18o':
     #             high_cut = high_cut_c18o 
     #         elif mol == '12co':
@@ -256,14 +351,20 @@ def main():
     #             high_cut = high_cut_13co
 
 
-    #         ax = plot_stat_feedback(stat_list, ax=ax, return_ax=True, catalog="outflows_nro45m.csv",
+    #         ax = plot_stat_feedback(stat_list, test=False, ax=ax, return_ax=True, catalog="outflows_nro45m_new.csv",
     #                 return_cols="Pdot_flow", ra_col="RA_J2000", dec_col="DEC_J2000",
     #                 surface_density=True, feedback_label=r"$\dot P_{\rm out}$ (M$_\odot$ km s$^{-1}$ yr$^{-1}$ deg$^{-2}$)",
-    #                 logx=False, errorbar_kwargs={'ecolor':colors, 'linewidth':2},
-    #                 scatter_kwargs={'color':colors, 's':30},
+    #                 label_kwargs={'size':label_size},
+    #                 logx=False, errorbar_kwargs={'ecolor':edgecolors, 'linewidth':2},
+    #                 scatter_kwargs={'edgecolor':edgecolors, 'facecolor':facecolors, 's':60},
     #                 feedback_mode="sum", within_data=False,
-    #                 refit=stat_name is 'pspec',
-    #                 refit_kwargs_list=[{"high_cut":high_cut}]*len(stat_list))
+    #                 marker=markers,
+    #                 refit=False,
+    #                 refit_kwargs_list=[{"high_cut":high_cut}]*len(stat_list),
+    #                 ii_lowerlimit=ii_lowerlimit)
+
+    #         feedback_label=r"$\dot P_{\rm out}$ (M$_\odot$ km s$^{-1}$ yr$^{-1}$ deg$^{-2}$)"
+    #         xla = ax.set_xlabel("{}".format(feedback_label))
 
     #         ax.set_yticks(ytick_arr[icol,irow])
 
@@ -274,6 +375,7 @@ def main():
     #         if icol == 0:
     #             ax.yaxis.set_major_formatter(
     #                     ticker.StrMethodFormatter('{x:.2f}'))
+                
     #         if icol == 1:
     #             # ax.set_ylabel('')
     #             ax.yaxis.set_major_formatter(
@@ -282,7 +384,7 @@ def main():
     #             ax.set_xlabel('')
     # # ax1.set_xlabel('')
     # # plt.tight_layout()
-    # plt.savefig("slope_outflow_pdot_surfacedensity{}.pdf".format(refit_str))
+    # plt.savefig("slope_outflownew_pdot_surfacedensity{}_colors.pdf".format(plot_str))
     # plt.close()
 
 ## Plotting scatter plots of SCF and PSPEC slopes versus 
@@ -318,13 +420,13 @@ def main():
     #         elif mol == '13co':
     #             high_cut = high_cut_13co
 
-    #         ax = plot_stat_feedback(stat_list, ax=ax, return_ax=True, catalog="outflows_nro45m.csv",
+    #         ax = plot_stat_feedback(stat_list, ax=ax, return_ax=True, catalog="outflows_nro45m_new.csv",
     #                 return_cols="Pdot_flow", ra_col="RA_J2000", dec_col="DEC_J2000",
     #                 surface_density=False, feedback_label=r"$\dot P_{\rm out}$ (M$_\odot$ km s$^{-1}$ yr$^{-1}$)",
     #                 logx=False, errorbar_kwargs={'ecolor':colors, 'linewidth':2},
     #                 scatter_kwargs={'color':colors, 's':30},
     #                 feedback_mode="sum", within_data=False,
-    #                 refit=stat_name is 'pspec',
+    #                 refit=False,
     #                 refit_kwargs_list=[{"high_cut":high_cut}]*len(stat_list))
 
     #         ax.set_yticks(ytick_arr[icol,irow])
@@ -344,11 +446,11 @@ def main():
     #             ax.set_xlabel('')
     # # ax1.set_xlabel('')
     # # plt.tight_layout()
-    # plt.savefig("slope_outflow_pdot{}.pdf".format(refit_str))
+    # plt.savefig("slope_outflownew_pdot{}.pdf".format(refit_str))
     # plt.close()
 
-## Plotting scatter plots of SCF and PSPEC slopes versus 
-## shell pdot in Orion A regions.
+# Plotting scatter plots of SCF and PSPEC slopes versus 
+# shell pdot in Orion A regions.
 
     # f, axarr = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=False,
     #        figsize=(9,9.5))
@@ -408,66 +510,88 @@ def main():
     # plt.savefig("slope_shell_pdot{}.pdf".format(refit_str))
     # plt.close()
 
-## Plot scatter plots of SCF and PSPEC slopes versus
-## shell pdot surface density 
-    # f, axarr = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=False,
-    #         figsize=(9,9.5))
-    # f.subplots_adjust(hspace=0, wspace=0.4)
+# Plot scatter plots of SCF and PSPEC slopes versus
+# shell pdot surface density 
+#Run this block of code to generate a figure in paper.
+    f, axarr = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=False,
+            figsize=(9,9.5))
+    f.subplots_adjust(hspace=0, wspace=0.4)
    
-    # #Iterate over each row.
-    # for irow, axrow, mol in zip(
-    #         range(len(mols)), axarr, mols):
-    #     #iterate over each column.
-    #     for icol, ax, stat_name in zip(
-    #             range(len(stat_names)), axrow, stat_names):
-    #         if stat_name == 'pspec':
-    #             stat_list = glob("{}_results/{}_{}*_{}*.p".format(
-    #             stat_name, stat_name, mol, pspec_str))
-    #         else:
-    #             stat_list = glob("{}_results/{}_{}*.p".format(
-    #                 stat_name, stat_name, mol))
+    #Iterate over each row.
+    for irow, axrow, mol in zip(
+            range(len(mols)), axarr, mols):
+        #iterate over each column.
+        for icol, ax, stat_name in zip(
+                range(len(stat_names)), axrow, stat_names):
+            
+            if stat_name == 'pspec':
+                stat_list = glob("{}_results/{}_{}*_{}*.p".format(
+                stat_name, stat_name, mol, pspec_str))
+                stat_str = pspec_str
+            elif stat_name == 'scf':
+                stat_list = glob("{}_results/{}_{}*_{}*.p".format(
+                    stat_name, stat_name, mol, scf_str))
+                stat_str = scf_str
+                
+            region_names = [stat_list.split(mol+"_")[1].split("_"+stat_str)[0] for stat_list in stat_list]
+            markers = [region_markers[x] for x in region_names]
+            edgecolors = [region_edgecolors[x] for x in region_names]
+            facecolors = [region_facecolors[x] for x in region_names]
 
-    #         ii_davis = ["davis" in stat_file for stat_file in stat_list]
-    #         colors = np.array(['0.7'] * len(stat_list))
-    #         colors[ii_davis] = '0.1'
-    #         print("Running plot_stat_feedback")
+            print("Running plot_stat_feedback")
 
-    #         if mol == 'c18o':
-    #             high_cut = high_cut_c18o 
-    #         elif mol == '12co':
-    #             high_cut = high_cut_12co
-    #         elif mol == '13co':
-    #             high_cut = high_cut_13co
+            ii_davis = ["davis" in stat_file for stat_file in stat_list]
+            ii_omc1 = ["omc1" in stat_file for stat_file in stat_list]
+            # colors = np.array(['0.7'] * len(stat_list))
+            # colors[ii_davis] = '0.1'
+            # colors[ii_omc1] = '0.1'
+            print(ii_davis, ii_omc1)
 
-    #         ax = plot_stat_feedback(stat_list, ax=ax, return_ax=True, catalog="shells_pdot_NtoS.csv",
-    #                 return_cols="Pdot_mid", ra_col="RA", dec_col="DEC",
-    #                 surface_density=True, feedback_label=r"$\dot P_{\rm shells}$ (M$_\odot$ km s$^{-1}$ yr$^{-1}$ deg$^{-2}$)",
-    #                 logx=False, errorbar_kwargs={'ecolor':colors, 'linewidth':2},
-    #                 scatter_kwargs={'color':colors, 's':30},
-    #                 feedback_mode="sum", within_data=False,
-    #                 refit=stat_name is 'pspec',
-    #                 refit_kwargs_list=[{"high_cut":high_cut}]*len(stat_list))
-    #         print("finished plot_stat_feedback")
-    #         ax.set_yticks(ytick_arr[icol,irow])
+            # facecolors = np.array(['0.7']*len(stat_list))
+            # facecolors[ii_omc1] = '1.0'
+            # facecolors[ii_davis] = '0.1'
 
-    #         mol_label = mols_dict[mol]
-    #         ax.annotate(mol_label, (0.5, 0.9), 
-    #                 size=14, xycoords="axes fraction")
+            if mol == 'c18o':
+                high_cut = high_cut_c18o 
+            elif mol == '12co':
+                high_cut = high_cut_12co
+            elif mol == '13co':
+                high_cut = high_cut_13co
 
-    #         if icol == 0:
-    #             ax.yaxis.set_major_formatter(
-    #                     ticker.StrMethodFormatter('{x:.2f}'))
-    #         if icol == 1:
-    #             # ax.set_ylabel('')
-    #             ax.yaxis.set_major_formatter(
-    #                     ticker.StrMethodFormatter('{x:.1f}'))
-    #         if irow < 2:
-    #             ax.set_xlabel('')
-    # # ax1.set_xlabel('')
-    # # plt.tight_layout()
-    # print("Saving figure.")
-    # plt.savefig("slope_shell_pdot_density{}.pdf".format(refit_str))
-    # plt.close()
+            ax = plot_stat_feedback(stat_list, test=False, ax=ax, return_ax=True, catalog="shells_pdot_NtoS.csv",
+                    return_cols="Pdot_mid", ra_col="RA", dec_col="DEC",
+                    surface_density=True, feedback_label=r"$\dot P_{\rm shells}$ (M$_\odot$ km s$^{-1}$ yr$^{-1}$ deg$^{-2}$)",
+                    label_kwargs={'size':label_size},
+                    logx=False, errorbar_kwargs={'ecolor':edgecolors, 'linewidth':2},
+                    scatter_kwargs={'edgecolor':edgecolors, 'facecolor':facecolors, 's':60},
+                    feedback_mode="sum", within_data=False,
+                    marker=markers,
+                    refit=stat_name is 'pspec',
+                    refit_kwargs_list=[{"high_cut":high_cut}]*len(stat_list))
+            print("finished plot_stat_feedback")
+            ax.set_yticks(ytick_arr[icol,irow])
+
+            feedback_label=r"$\dot P_{\rm shells}$ (M$_\odot$ km s$^{-1}$ yr$^{-1}$ deg$^{-2}$)"
+            xla = ax.set_xlabel("{}".format(feedback_label))
+
+            mol_label = mols_dict[mol]
+            ax.annotate(mol_label, (0.5, 0.9), 
+                    size=14, xycoords="axes fraction")
+
+            if icol == 0:
+                ax.yaxis.set_major_formatter(
+                        ticker.StrMethodFormatter('{x:.2f}'))
+            if icol == 1:
+                # ax.set_ylabel('')
+                ax.yaxis.set_major_formatter(
+                        ticker.StrMethodFormatter('{x:.1f}'))
+            if irow < 2:
+                ax.set_xlabel('')
+    # ax1.set_xlabel('')
+    # plt.tight_layout()
+    print("Saving figure.")
+    plt.savefig("slope_shell_pdot_density{}_colors.pdf".format(plot_str))
+    plt.close()
 
 
 ## Plot covariance matrices.
@@ -481,11 +605,11 @@ def main():
     #             for region in region_names]
 
     #     f, axarr = plt.subplots(nrows=3, ncols=4, sharex=True, sharey=True,
-    #             figsize=(10,8))
+    #             figsize=(8,6))
     #     f.subplots_adjust(hspace=0, wspace=0)
 
     #     pca_arr = np.reshape(pca_files, axarr.shape)
-    #     region_arr = np.reshape(region_names, axarr.shape)
+    #     region_arr = np.reshape(region_labels, axarr.shape)
 
     #     #Iterate over each row.
     #     for irow, axrow in zip(
@@ -504,10 +628,13 @@ def main():
 
     #     #         mol_label = mols_dict[mol]
     #             ax.annotate(region_arr[irow,icol], (0.06, 0.9), 
-    #                     size=14, xycoords="axes fraction",
+    #                     size=11, xycoords="axes fraction",
     #                     color='white')
     #             ax.set_yticks([5,10])
     #             ax.set_xticks([5,10])
+                
+    #             ax.set_ylabel(r"v$_{\rm LSR}$ (km s$^{-1}$)", size=14)
+    #             ax.set_xlabel(r"v$_{\rm LSR}$ (km s$^{-1}$)", size=14)
 
     #             #Remove tick mark.
     #             ax.tick_params(axis='both', which='both', length=0)
@@ -528,73 +655,120 @@ def main():
     #             else:
     #                 ax.tick_params(axis='x', which='both', length=4)
     #     # # ax1.set_xlabel('')
-    #     # # plt.tight_layout()
-    #     plt.savefig("cov_{}.pdf".format(mol))
+    #     plt.savefig("cov_{}.pdf".format(mol), bbox_inches='tight')
+        
     #     plt.close()
 
 
 #### Plot color-color plots of PCA distances between regions, ordered by 
-#### the YSO surface density.
+#### the YSO surface density. 
+# Run this block to generate PCA distance metric color-color plot for Figure 5 in paper.
     
-    # region_names = ["jrf_north", "jrf_central", "jrf_south", "jrf_l1641n",
+
+    # catalogs = ["shells_pdot_NtoS.csv","outflows_nro45m_new.csv","spitzer_orion.fit"]
+    # return_cols_list = ["Pdot_mid","Pdot_flow","Cl"]
+    # ra_col_list = ["RA", "RA_J2000", "_RAJ2000"]
+    # dec_col_list = ["DEC", "DEC_J2000", "_DEJ2000"]
+    # feedback_modes = ['sum', 'sum', 'count']
+    # surface_density_list = [True, True, True]
+    # within_data_list = [False, False, True]
+    
+    # subcube_dir = "subcubes/"
+    
+    
+
+    # f, axarr = plt.subplots(nrows=3, ncols=3,
+    #         figsize=(7,11))
+
+    # f.subplots_adjust(wspace=0.1, hspace=0.6)
+
+
+    # irow = 0
+    # for axrow, catalog, return_cols, ra_col, dec_col, feedback_mode, surface_density, within_data in zip(
+    #         axarr, catalogs, return_cols_list, ra_col_list, dec_col_list,
+    #         feedback_modes, surface_density_list, within_data_list):
+    #     print("Looping over regions.\n")
+
+    #     region_names = ["jrf_north", "jrf_central", "jrf_south", "jrf_l1641n",
     #         "davis_ngc1977", "davis_omc23", "ungerechts_omc1", "davis_omc4",
     #         "davis_omc5", "davis_hh34", "davis_l1641n", "davis_v380"]
+    #     feedback_list = []
+        
+    #     for region_name in region_names:
+    #         print("Now doing region {}.\n".format(region_name))
 
-    # feedback_list = []
+    #         feedback_table = region_stars(region_name=region_name, table=catalog,
+    #                 return_cols=return_cols, ra_col=ra_col,
+    #                 dec_col=dec_col, subcube_dir=subcube_dir, within_data=within_data)
 
-    # for region_name in region_names:
+    #         if feedback_mode == 'count':
+    #             feedback_total = len(feedback_table)
+                
+    #         elif feedback_mode == 'sum':
+    #             print(feedback_table)
+    #             feedback_total = feedback_table.sum()
+            
+    #         elif feedback_mode == 'area':
+    #             area = region_area(unit="deg", dist=414*u.pc,
+    #                 region_name=region_name, subcube_dir=subcube_dir)
+    #             feedback_total = area.value
 
-    #     feedback_table = region_stars(region_name=region_name,
-    #             table="spitzer_orion.fit",
-    #             return_cols=["_RAJ2000", "_DEJ2000", "Cl"],
-    #             ra_col="_RAJ2000", dec_col="_DEJ2000",
-    #             subcube_dir="subcubes/", within_data=True)
+    #         if surface_density:
+    #             print("Calculating surface density.\n")
+    #             area = region_area(unit="deg", dist=414*u.pc,
+    #                 region_name=region_name, subcube_dir=subcube_dir)
 
-    #     feedback_total = len(feedback_table.as_array())
+    #             feedback_total = feedback_total / area.value
 
-    #     area = region_area(unit="deg", dist=414*u.pc,
-    #         region_name=region_name, subcube_dir="subcubes/")
+    #         feedback_list.append(feedback_total)    
 
-    #     feedback_total = feedback_total / area.value
+    #     ii_sort = np.argsort(feedback_list)
+    #     region_names = np.array(region_names)[ii_sort]
+    #     feedback_list = np.array(feedback_list)[ii_sort]
 
-    #     feedback_list.append(feedback_total)
-    
-    # ii_sort_nstars = np.argsort(feedback_list)
-    # region_names = np.array(region_names)[ii_sort_nstars]
-    # nstars = np.array(feedback_list)[ii_sort_nstars]
+    #     mols = ["12co", "13co", "c18o"]
 
-    # mols = ["12co", "13co", "c18o"]
+    #     mols_dict = {
+    #         "12co":r"$^{12}$CO",
+    #         "13co":r"$^{13}$CO",
+    #         "c18o":r"C$^{18}$O"}
+        
+    #     icol = 0
+    #     for mol, ax in zip(mols,axrow):        
 
-    # mols_dict = {
-    #     "12co":r"$^{12}$CO",
+    #         pca_files = [glob("pca_results/pca_{}*{}*.p".format(mol, region))[0]
+    #                 for region in region_names]
 
-    # f, axarr = plt.subplots(nrows=1, ncols=3, sharey=True,
-    #         figsize=(12,4))
-    # f.subplots_adjust(wspace=0.)
+    #         # print(pca_files)
+           
+    #         ax = plot_colorcolor(pca_files, ax=ax, return_ax=True,
+    #                 dist_func=dist_pca, dist_func_kwargs={},
+    #                 region_names=None, imshow_kwargs={},
+    #                 test=False)
+    #         print(np.array(region_labels)[ii_sort])
+    #         ax.set_xticklabels(np.array(region_labels)[ii_sort], size=10, rotation='vertical')
+    #         # ax.set_yticklabels(['']*len(region_labels))
+    #         print("Y-tick Labels will be", np.array(region_labels)[ii_sort])
+    #         # ax.set_yticklabels(np.arange(len(region_labels)))
+    #         if icol == 0:
+    #             ax.set_yticklabels(np.array(region_labels)[ii_sort], size=10)
+    #         else:
+    #             ax.set_yticklabels(['']*len(region_labels))
+            
+    #         if irow == 0:
+    #             ax.set_title(mols_dict[mol], size=15)
+            
+    #         # ax.set_title("(Row,Col) = ({},{})".format(irow,icol), size=15)
 
-    # for mol, ax in zip(mols,axarr):        
+    #         icol += 1
 
-    #     pca_files = [glob("pca_results/pca_{}*{}*.p".format(mol, region))[0]
-    #             for region in region_names]
-
-    #     # print(pca_files)
-       
-    #     ax = plot_colorcolor(pca_files, ax=ax, return_ax=True,
-    #             dist_func=dist_pca, dist_func_kwargs={},
-    #             region_names=region_names, imshow_kwargs={})
-
-    #     ax.set_xticklabels(region_names, size=10)
-    #     ax.set_yticklabels(region_names, size=10)
-
-    #     ax.set_title(mols_dict[mol], size=15)
-
-    #     # ax1.set_xlabel('')
-    # # plt.tight_layout()
-    # plt.savefig("pca_colorcolor_sortedbynstar.pdf".format(mol), bbox_inches='tight')
+    #     irow += 1
+    # plt.savefig("pca_colorcolor_sortedthreeways.pdf", bbox_inches='tight')
     # plt.close()
 
-### Plot SCF spectra of subregions together.
-###
+## Plot SCF spectra of subregions together.
+#Run this section to plot the SCF subregion spectra shown in Figure 3 and Figure 10 of paper.
+
     # mols = ['12co', '13co', 'c18o']
     # yticks = [[0.4,0.6,0.8], [0.3,0.5,0.7], [0.1,0.2,0.3]]
     # # xticks = [[5,10,30], [5,10,30], [5,10,30]]
@@ -606,8 +780,8 @@ def main():
     #             "davis_omc5", "davis_hh34", "davis_l1641n", "davis_v380"]
 
     #     bkgrd_colors = ["0.7"]*len(region_names)
-
-    #     scf_files = [glob("scf_results/scf_{}*{}*.p".format(mol, region))[0]
+    #     print(mol)
+    #     scf_files = [glob("scf_results/scf_{}*{}*{}*.p".format(mol, region, scf_str))[0]
     #             for region in region_names]
 
     #     f, axarr = plt.subplots(nrows=3, ncols=4, sharex=True, sharey=True,
@@ -615,7 +789,7 @@ def main():
     #     f.subplots_adjust(hspace=0, wspace=0)
 
     #     scf_arr = np.reshape(scf_files, axarr.shape)
-    #     region_arr = np.reshape(region_names, axarr.shape)
+    #     region_arr = np.reshape(region_labels, axarr.shape)
 
     #     #Iterate over each row.
     #     for irow, axrow in zip(
@@ -625,14 +799,25 @@ def main():
     #                 range(axarr.shape[1]), axrow):
 
     #             ii = scf_files.index(scf_arr[irow, icol])
+
+    #             if irow == 0:
+    #                     twin_axis=True
+    #             else:
+    #                     twin_axis=False
+
+
+
+    #             ax.set_xlim((2.507168712618893, 46.90984311664267))
+    #             print(ax.get_xlim())
     #             ax = plot_scf_spectrum(scf_files[:ii]+scf_files[ii+1:],
     #                     ax=ax, return_ax=True,
     #                     colors=bkgrd_colors[:ii] + bkgrd_colors[ii+1:],
     #                     labels=region_names[:ii] + region_names[ii+1:],
     #                     xlabel="Lag [pixels]", ylabel="SCF",
     #                     plot_points=True, plot_fit=True,
+    #                     twin_axis=False,
     #                     errorbar_kwargs={'ms':5, "elinewidth":2})
-
+    #             print(ax.get_xlim())
     #             #Plot one region's SCF spectrum in black.
     #             print(scf_arr[irow,icol])
     #             ax = plot_scf_spectrum([scf_files[ii]], ax=ax, return_ax=True,
@@ -640,15 +825,26 @@ def main():
     #                     xlabel="Lag [pixels]", ylabel="SCF",
     #                     plot_points=True, plot_fit=True, errorbar_kwargs={"zorder":3},
     #                     plot_kwargs={"zorder":3},
+    #                     twin_axis=twin_axis,
     #                     show_fitrange=False,
     #                     show_beamwidth=False)
     #             if mol == '12co': 
     #                 region_label_loc = (0.08,0.08) 
+    #                 slope_label_loc = (0.08,0.2)
     #             if mol == '13co': 
-    #                 region_label_loc = (0.08,0.08) 
+    #                 region_label_loc = (0.25,0.9) 
+    #                 slope_label_loc = (0.25, 0.04) 
     #             if mol == 'c18o': 
-    #                 region_label_loc = (0.3,0.9) 
+    #                 region_label_loc = (0.25,0.9) 
+    #                 slope_label_loc = (0.3, 0.04) 
     #             ax.annotate(region_arr[irow,icol], region_label_loc, 
+    #                     size=11, xycoords="axes fraction",
+    #                     color='black')
+
+    #             scf = SCF.load_results(scf_arr[irow,icol])
+    #             slope = scf.slope
+    #             slope_err = scf.slope_err
+    #             ax.annotate(r"{} $\pm$ {}".format(np.round(slope, 3), np.round(slope_err, 3)), slope_label_loc, 
     #                     size=11, xycoords="axes fraction",
     #                     color='black')
     #             ax.set_xscale('log')
@@ -677,8 +873,121 @@ def main():
     #             else:
     #                 pass
     #                 # ax.tick_params(axis='x', which='both', length=4)
-    #     plt.savefig("scf_spectrum_{}.pdf".format(mol))
+    #     plt.savefig("scf_spectrum_{}_{}.pdf".format(mol, scf_str))
     #     plt.close()
+
+
+## Plot SCF spectra of subregions together.
+##Run this section to plot the SCF subregion spectra at larger scales
+##shown in the appendix of paper.
+
+    mols = ['12co']
+    scf_str = "_5to200pix"
+    yticks = [[0.4,0.6,0.8]]
+    # xticks = [[5,10,30], [5,10,30], [5,10,30]]
+
+    for mol,ytick in zip(mols,yticks):
+
+        region_names = ["jrf_north", "jrf_central", "jrf_south", "jrf_l1641n",
+                "davis_ngc1977", "davis_omc23", "ungerechts_omc1", "davis_omc4",
+                "davis_omc5", "davis_hh34", "davis_l1641n", "davis_v380"]
+
+        bkgrd_colors = ["0.7"]*len(region_names)
+        print(mol)
+        scf_files = [glob("scf_test/scf_{}*{}*{}*.pkl".format(mol, region, scf_str))[0]
+                for region in region_names]
+
+        f, axarr = plt.subplots(nrows=3, ncols=4, sharex=True, sharey=True,
+                figsize=(10,8))
+        f.subplots_adjust(hspace=0, wspace=0)
+
+        scf_arr = np.reshape(scf_files, axarr.shape)
+        region_arr = np.reshape(region_labels, axarr.shape)
+
+        #Iterate over each row.
+        for irow, axrow in zip(
+                range(axarr.shape[0]), axarr):
+            #iterate over each column.
+            for icol, ax in zip(
+                    range(axarr.shape[1]), axrow):
+
+                ii = scf_files.index(scf_arr[irow, icol])
+
+                if irow == 0:
+                        twin_axis=True
+                else:
+                        twin_axis=False
+
+
+
+                ax.set_xlim((3, 500))
+                print(ax.get_xlim())
+                # ax = plot_scf_spectrum(scf_files[:ii]+scf_files[ii+1:],
+                #         ax=ax, return_ax=True,
+                #         colors=bkgrd_colors[:ii] + bkgrd_colors[ii+1:],
+                #         labels=region_names[:ii] + region_names[ii+1:],
+                #         xlabel="Lag [pixels]", ylabel="SCF",
+                #         plot_points=True, plot_fit=True,
+                #         twin_axis=False,
+                #         errorbar_kwargs={'ms':5, "elinewidth":2})
+                # print(ax.get_xlim())
+                #Plot one region's SCF spectrum in black.
+                print(scf_arr[irow,icol])
+                ax = plot_scf_spectrum([scf_files[ii]], ax=ax, return_ax=True,
+                        colors=['black'], labels=[region_names[ii]],
+                        xlabel="Lag [pixels]", ylabel="SCF",
+                        plot_points=True, plot_fit=False, errorbar_kwargs={"zorder":3},
+                        plot_kwargs={"zorder":3},
+                        twin_axis=twin_axis, twin_axis_ticks=np.array([0.02, 0.1, 1]),
+                        show_fitrange=False,
+                        show_beamwidth=False)
+                if mol == '12co': 
+                    region_label_loc = (0.08,0.08) 
+                    slope_label_loc = (0.08,0.2)
+                if mol == '13co': 
+                    region_label_loc = (0.25,0.9) 
+                    slope_label_loc = (0.25, 0.04) 
+                if mol == 'c18o': 
+                    region_label_loc = (0.25,0.9) 
+                    slope_label_loc = (0.3, 0.04) 
+                ax.annotate(region_arr[irow,icol], region_label_loc, 
+                        size=11, xycoords="axes fraction",
+                        color='black')
+
+                # scf = SCF.load_results(scf_arr[irow,icol])
+                # slope = scf.slope
+                # slope_err = scf.slope_err
+                # ax.annotate(r"{} $\pm$ {}".format(np.round(slope, 3), np.round(slope_err, 3)), slope_label_loc, 
+                #         size=11, xycoords="axes fraction",
+                #         color='black')
+                ax.set_xscale('log')
+                ax.set_yscale('log')
+                
+                # ax.set_xticks([5,10,30])
+                ax.set_yticks(ytick)
+                
+                ax.get_xaxis().set_major_formatter(
+                    ticker.ScalarFormatter())
+                                                         
+                ax.get_yaxis().set_major_formatter(
+                    ticker.ScalarFormatter())
+
+                ax.tick_params(axis='y', which='minor', labelleft=False)
+              
+                if icol > 0:
+                    ax.set_ylabel('')
+                    # ax.tick_params(axis='y', which='both', length=4, direction='in')
+                else:
+                    pass
+                    # ax.tick_params(axis='y', which='both', length=4)
+                if irow < 2:
+                    ax.set_xlabel('')
+                    ax.tick_params(axis='x', which='both', length=4, direction='in')
+                else:
+                    pass
+                    # ax.tick_params(axis='x', which='both', length=4)
+        plt.savefig("scf_spectrum_{}{}.pdf".format(mol, scf_str))
+        plt.close()
 
 ## Plot power spectra together.
 ##
@@ -699,7 +1008,7 @@ def main():
     #     f.subplots_adjust(hspace=0, wspace=0)
 
     #     pspec_arr = np.reshape(pspec_files, axarr.shape)
-    #     region_arr = np.reshape(region_names, axarr.shape)
+    #     region_arr = np.reshape(region_labels, axarr.shape)
 
     #     #Iterate over each row.
     #     for irow, axrow in zip(
@@ -798,18 +1107,17 @@ def main():
     #     plt.savefig("pspec_spectrum_{}.pdf".format(mol))
     #     plt.close()
 
-## Plot power spectra together after beam correction and apodization.
-## Refit the power spectra by restricting the fitting range.
+# Plot power spectra together after beam correction and apodization.
+#Run this block to generate the subregion power spectra for Figure 4 and 11 in the paper.
     # mols = ['12co', '13co', 'c18o']
     # for mol in mols:
 
     #     region_names = ["jrf_north", "jrf_central", "jrf_south", "jrf_l1641n",
     #             "davis_ngc1977", "davis_omc23", "ungerechts_omc1", "davis_omc4",
     #             "davis_omc5", "davis_hh34", "davis_l1641n", "davis_v380"]
-
     #     bkgrd_color = "0.7"
 
-    #     pspec_files = [glob("pspec_results/pspec_{}*{}*beamcorrect_apodizetukey*.p".format(mol, region))[0]
+    #     pspec_files = [glob("pspec_results/pspec_{}*{}*{}*.p".format(mol, region, pspec_str))[0]
     #             for region in region_names]
 
     #     f, axarr = plt.subplots(nrows=3, ncols=4, sharex=True, sharey=True,
@@ -817,7 +1125,7 @@ def main():
     #     f.subplots_adjust(hspace=0, wspace=0)
 
     #     pspec_arr = np.reshape(pspec_files, axarr.shape)
-    #     region_arr = np.reshape(region_names, axarr.shape)
+    #     region_arr = np.reshape(region_labels, axarr.shape)
 
     #     #Iterate over each row.
     #     for irow, axrow in zip(
@@ -878,7 +1186,7 @@ def main():
     #                             'zorder':zorder, 's':7, 'color':sc_color, 'alpha':0.7},
     #                         plot_kwargs={
     #                             'color':line_color, 'zorder':zorder, 'linestyle':'-', 'lw':lw},
-    #                         refit=True,
+    #                         refit=False,
     #                         refit_kwargs={'high_cut':high_cut},
     #                         show_fitrange=show_fitrange,
     #                         show_beamwidth=show_beamwidth)
@@ -886,17 +1194,26 @@ def main():
                     
 
     #             if mol == '12co': 
-    #                 region_label_loc = (0.08,0.08) 
+    #                 region_label_loc = (0.05,0.08) 
+    #                 slope_label_loc = (0.05,0.2)
     #                 ax.set_ylim(10.1,23)
     #             if mol == '13co': 
-    #                 region_label_loc = (0.08,0.08) 
+    #                 region_label_loc = (0.05,0.08) 
+    #                 slope_label_loc = (0.05,0.2)
     #                 ax.set_ylim(8,22)
     #             if mol == 'c18o': 
-    #                 region_label_loc = (0.3,0.9)
+    #                 region_label_loc = (0.05,0.08) 
+    #                 slope_label_loc = (0.05,0.2)
     #                 ax.set_ylim(8,21)
 
                     
     #             ax.annotate(region_arr[irow,icol], region_label_loc, 
+    #                     size=11, xycoords="axes fraction",
+    #                     color='black')
+    #             pspec = PowerSpectrum.load_results(pspec_arr[irow,icol])
+    #             slope = pspec.slope
+    #             slope_err = pspec.slope_err
+    #             ax.annotate(r"{} $\pm$ {}".format(np.round(slope, 2), np.round(slope_err, 2)), slope_label_loc, 
     #                     size=11, xycoords="axes fraction",
     #                     color='black')
                 
@@ -926,7 +1243,7 @@ def main():
     #             else:
     #                 pass
     #                 # ax.tick_params(axis='x', which='both', length=4)
-    #     plt.savefig("pspec_spectrum_{}_beamcorrect_apodizetukey_highcut{}.pdf".format(mol,high_cut.value))
+    #     plt.savefig("pspec_spectrum_{}_{}.pdf".format(mol,pspec_str))
     #     plt.close()
 
 
@@ -936,137 +1253,139 @@ def main():
 ## 
 
 
-    region_names = ["jrf_north", "jrf_central", "jrf_south"]#, "jrf_l1641n"]
-    mols = ['12co', '13co', 'c18o']
-    colors = ['blue', 'black', 'red']
-    for mol in mols:
-        for region in region_names:
+    # region_names = ["jrf_north", "jrf_central", "jrf_south"]#, "jrf_l1641n"]
+    # mols = ['12co', '13co', 'c18o']
+    # colors = ['blue', 'black', 'red']
+    # for mol in mols:
+    #     for region in region_names:
             
 
-            pspec_files = glob(
-                    "pspec_results/pspec_{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region))
-            vlow_list = [float(p.split('_')[5].split('to')[0].replace('p','.')) for p in pspec_files]
-            colors = np.array(['blue', 'black', 'red'])[np.argsort(vlow_list)]
-            central_pspec = PowerSpectrum.load_results(np.array(pspec_files)[colors == 'black'][0])
-            central_norm = central_pspec.ps1D[0]
-            bmaj_pix = central_pspec.header['BMAJ'] / central_pspec.header['CDELT2']
+    #         pspec_files = glob(
+    #                 "pspec_results/pspec_{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region))
+    #         vlow_list = [float(p.split('_')[5].split('to')[0].replace('p','.')) for p in pspec_files]
+    #         colors = np.array(['blue', 'black', 'red'])[np.argsort(vlow_list)]
+    #         central_pspec = PowerSpectrum.load_results(np.array(pspec_files)[colors == 'black'][0])
+    #         central_norm = central_pspec.ps1D[0]
+    #         bmaj_pix = central_pspec.header['BMAJ'] / central_pspec.header['CDELT2']
 
-            f, ax = plt.subplots(nrows=1, ncols=1)
+    #         f, ax = plt.subplots(nrows=1, ncols=1)
 
-            for pspec_file, color in zip(pspec_files, colors):
-               ax = plot_pspec(pspec_file,
-                            ax=ax, return_ax=True,
-                            norm_factor=central_norm,
-                            fill_between=True,
-                            scatter=False,
-                            line=False,
-                            connect_points=True,
-                            fill_between_kwargs={
-                                'zorder':1, 'color':color, 'alpha':0.3},
-                            # scatter_kwargs={
-                            #     'zorder':3, 's':7, 'color':color, 'alpha':0.7},
-                            connect_plot_kwargs={'color':color, 'linestyle':'-'},
-                            refit=False,
-                            show_fitrange=False,
-                            show_beamwidth=False,
-                            twin_axis=True,
-                            twin_axis_ticks=np.array([0.01,0.1,1]))
-            # plt.xlim(right=np.log10(1/bmaj_pix))
-
-            ax.set_xlim(right=np.log10(1/bmaj_pix))
-            ax.set_ylim(top=2, bottom=-8)
-            print(ax.get_xlim())
+    #         for pspec_file, color in zip(pspec_files, colors):
+    #            ax = plot_pspec(pspec_file,
+    #                         ax=ax, return_ax=True,
+    #                         norm_factor=central_norm,
+    #                         fill_between=True,
+    #                         scatter=False,
+    #                         line=False,
+    #                         connect_points=True,
+    #                         fill_between_kwargs={
+    #                             'zorder':1, 'color':color, 'alpha':0.3},
+    #                         # scatter_kwargs={
+    #                         #     'zorder':3, 's':7, 'color':color, 'alpha':0.7},
+    #                         connect_plot_kwargs={'color':color, 'linestyle':'-'},
+    #                         refit=False,
+    #                         show_fitrange=False,
+    #                         show_beamwidth=False,
+    #                         twin_axis=True,
+    #                         twin_axis_ticks=np.array([0.01,0.1,1]))
+    #         # plt.xlim(right=np.log10(1/bmaj_pix))
+    #         ax.set_xlim(right=np.log10(1/bmaj_pix))
+    #         ax.set_ylim(top=2, bottom=-8)
+    #         print(ax.get_xlim())
+    #         plt.tight_layout()
+    #         plt.savefig("pspec_linewings_{}_{}_beamcorrect_apodizetukey.pdf".format(mol, region))
+    #         plt.close()
       
       
-    region = "jrf_l1641n"
-    mols = ['12co', '13co', 'c18o']
+    # region = "jrf_l1641n"
+    # mols = ['12co', '13co', 'c18o']
     
-    for mol in mols:
-        red_l1641n_file = glob(
-                    "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "10p81"))[0]
-        red_ngc1999_file = glob(
-                    "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "10p31"))[0]
-        central_l1641n_file = glob(
-                    "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "6p56"))[0]
-        central_ngc1999_file = glob(
-                    "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "8p56"))[0]
-        blue_file = glob(
-                    "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "4p31"))[0]
+    # for mol in mols:
+    #     red_l1641n_file = glob(
+    #                 "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "10p81"))[0]
+    #     red_ngc1999_file = glob(
+    #                 "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "10p31"))[0]
+    #     central_l1641n_file = glob(
+    #                 "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "6p56"))[0]
+    #     central_ngc1999_file = glob(
+    #                 "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "8p56"))[0]
+    #     blue_file = glob(
+    #                 "pspec_results/pspec_{}*{}*{}*kms*beamcorrect_apodizetukey*.p".format(mol, region, "4p31"))[0]
         
-        central_l1641n_pspec = PowerSpectrum.load_results(central_l1641n_file)
-        central_norm = central_l1641n_pspec.ps1D[0]
-        bmaj_pix = central_l1641n_pspec.header['BMAJ'] / central_l1641n_pspec.header['CDELT2']
+    #     central_l1641n_pspec = PowerSpectrum.load_results(central_l1641n_file)
+    #     central_norm = central_l1641n_pspec.ps1D[0]
+    #     bmaj_pix = central_l1641n_pspec.header['BMAJ'] / central_l1641n_pspec.header['CDELT2']
 
 
-        pspec_files = [red_l1641n_file, central_l1641n_file, blue_file]
-        colors = ['red', 'black', 'blue']
+    #     pspec_files = [red_l1641n_file, central_l1641n_file, blue_file]
+    #     colors = ['red', 'black', 'blue']
 
-        f, ax = plt.subplots(nrows=1, ncols=1)
+    #     f, ax = plt.subplots(nrows=1, ncols=1)
 
-        for pspec_file, color in zip(pspec_files, colors):
+    #     for pspec_file, color in zip(pspec_files, colors):
 
-            ax = plot_pspec(pspec_file,
-                ax=ax, return_ax=True,
-                norm_factor=central_norm,
-                fill_between=True,
-                scatter=False,
-                line=False,
-                connect_points=True,
-                fill_between_kwargs={
-                    'zorder':1, 'color':color, 'alpha':0.3},
-                # scatter_kwargs={
-                #     'zorder':3, 's':7, 'color':color, 'alpha':0.7},h
-                connect_plot_kwargs={'color':color, 'linestyle':'-'},
-                refit=False,
-                show_fitrange=False,
-                show_beamwidth=False,
-                twin_axis=True,
-                twin_axis_ticks=np.array([0.01,0.1,1])) 
-
-
-        ax.set_xlim(right=np.log10(1/bmaj_pix))
-        ax.set_ylim(top=2, bottom=-8)
-        print(ax.get_xlim())
-        plt.tight_layout()
-        plt.savefig("pspec_linewings_{}_{}_beamcorrect_apodizetukey.pdf".format(mol, region))
-        plt.close()
+    #         ax = plot_pspec(pspec_file,
+    #             ax=ax, return_ax=True,
+    #             norm_factor=central_norm,
+    #             fill_between=True,
+    #             scatter=False,
+    #             line=False,
+    #             connect_points=True,
+    #             fill_between_kwargs={
+    #                 'zorder':1, 'color':color, 'alpha':0.3},
+    #             # scatter_kwargs={
+    #             #     'zorder':3, 's':7, 'color':color, 'alpha':0.7},h
+    #             connect_plot_kwargs={'color':color, 'linestyle':'-'},
+    #             refit=False,
+    #             show_fitrange=False,
+    #             show_beamwidth=False,
+    #             twin_axis=True,
+    #             twin_axis_ticks=np.array([0.01,0.1,1])) 
 
 
-        central_ngc1999_pspec = PowerSpectrum.load_results(central_ngc1999_file)
-        central_norm = central_ngc1999_pspec.ps1D[0]
-
-        pspec_files = [red_ngc1999_file, central_ngc1999_file, blue_file]
-        colors = ['red', 'black', 'blue']
-
-        f, ax = plt.subplots(nrows=1, ncols=1)
-
-        for pspec_file, color in zip(pspec_files, colors):
-
-            ax = plot_pspec(pspec_file,
-                ax=ax, return_ax=True,
-                norm_factor=central_norm,
-                fill_between=True,
-                scatter=False,
-                line=False,
-                connect_points=True,
-                fill_between_kwargs={
-                    'zorder':1, 'color':color, 'alpha':0.3},
-                # scatter_kwargs={
-                #     'zorder':3, 's':7, 'color':color, 'alpha':0.7},h
-                connect_plot_kwargs={'color':color, 'linestyle':'-'},
-                refit=False,
-                show_fitrange=False,
-                show_beamwidth=False,
-                twin_axis=True,
-                twin_axis_ticks=np.array([0.01,0.1,1])) 
+    #     ax.set_xlim(right=np.log10(1/bmaj_pix))
+    #     ax.set_ylim(top=2, bottom=-8)
+    #     print(ax.get_xlim())
+    #     plt.tight_layout()
+    #     plt.savefig("pspec_linewings_{}_{}_beamcorrect_apodizetukey.pdf".format(mol, region))
+    #     plt.close()
 
 
-        ax.set_xlim(right=np.log10(1/bmaj_pix))
-        ax.set_ylim(top=2, bottom=-8)
-        print(ax.get_xlim())
-        plt.tight_layout()
-        plt.savefig("pspec_linewings_{}_{}_ngc1999_beamcorrect_apodizetukey.pdf".format(mol, region))
-        plt.close()
+    #     central_ngc1999_pspec = PowerSpectrum.load_results(central_ngc1999_file)
+    #     central_norm = central_ngc1999_pspec.ps1D[0]
+
+    #     pspec_files = [red_ngc1999_file, central_ngc1999_file, blue_file]
+    #     colors = ['red', 'black', 'blue']
+
+    #     f, ax = plt.subplots(nrows=1, ncols=1)
+
+    #     for pspec_file, color in zip(pspec_files, colors):
+
+    #         ax = plot_pspec(pspec_file,
+    #             ax=ax, return_ax=True,
+    #             norm_factor=central_norm,
+    #             fill_between=True,
+    #             scatter=False,
+    #             line=False,
+    #             connect_points=True,
+    #             fill_between_kwargs={
+    #                 'zorder':1, 'color':color, 'alpha':0.3},
+    #             # scatter_kwargs={
+    #             #     'zorder':3, 's':7, 'color':color, 'alpha':0.7},h
+    #             connect_plot_kwargs={'color':color, 'linestyle':'-'},
+    #             refit=False,
+    #             show_fitrange=False,
+    #             show_beamwidth=False,
+    #             twin_axis=True,
+    #             twin_axis_ticks=np.array([0.01,0.1,1])) 
+
+
+    #     ax.set_xlim(right=np.log10(1/bmaj_pix))
+    #     ax.set_ylim(top=2, bottom=-8)
+    #     print(ax.get_xlim())
+    #     plt.tight_layout()
+    #     plt.savefig("pspec_linewings_{}_{}_ngc1999_beamcorrect_apodizetukey.pdf".format(mol, region))
+    #     plt.close()
 
 
         
@@ -1166,7 +1485,7 @@ def main():
     #     f.subplots_adjust(hspace=0, wspace=0)
 
     #     vcs_arr = np.reshape(vcs_files, axarr.shape)
-    #     region_arr = np.reshape(region_names, axarr.shape)
+    #     region_arr = np.reshape(region_labels, axarr.shape)
 
     #     #Iterate over each row.
     #     for irow, axrow in zip(
@@ -1452,6 +1771,21 @@ def main():
     #         labels=["15 pix", "30 pix", "45 pix", "60 pix"],
     #         scale_lags=1)
 
+    # roll_lags = np.arange(-200, 201, 5)*u.pix
+    # names = [cube.split('/')[-1].split('.')[0] for cube in cubes]
+    # pickle_files = ["scf_results/scf_"+name+"_10to300pix" for name in names]
+    # for i in range(len(cubes)):
+    #     if not glob(pickle_files[i]+"*"):
+    #         # if "davis_ngc1977" in names[i]:
+    #         #     scf =  SCF(SpectralCube.read(cubes[i]))
+    #         scf = SCF(SpectralCube.read(cubes[i]), roll_lags=roll_lags)
+    #         print("Running SCF on {} with roll_lags of {}. Pickling to {}.".format(cubes[i], roll_lags, pickle_files[i]))
+    #         scf.run(boundary='cut')
+    #         scf.fit_plaw(50*u.pix, 100*u.pix)
+    #         scf.save_results(pickle_files[i])
+            # run_scf(cubes[i], distance=414*u.pc, xunit=u.pix,
+            #         roll_lags=roll_lags,
+            #         pickle_file=pickle_files[i])
 
 ### Run PCA. 
 ###
@@ -1723,7 +2057,7 @@ def plot_overview(data, wcs=None, plotfile="plot_overview.pdf",
         yso_scatter_kwargs={},
         plot_shells=False, shell_file="../../shells/shell_candidates/AllShells_NtoS.reg",
         shell_patch_kwargs={'edgecolor':'white', 'facecolor':'none'},
-        plot_outflows=False, outflow_file='outflows_nro45m.csv',
+        plot_outflows=False, outflow_file='outflows_nro45m_new.csv',
         outflow_plot_kwargs={'markersize':20, 'linestyle':'None', 'color':'white'},
         mpl_style="presentation",
         xlabel="RA [J2000]", ylabel="DEC [J2000]"):
@@ -1822,7 +2156,7 @@ def plot_overview(data, wcs=None, plotfile="plot_overview.pdf",
                 transform=ax.get_transform('fk5'), **yso_scatter_kwargs)
 
     if plot_outflows:
-        t = Table.read("outflows_nro45m.csv")
+        t = Table.read("outflows_nro45m_new.csv")
         ra_outflows, dec_outflows, pa_outflows = t["RA_J2000"], t["DEC_J2000"], t["PA"] 
         for ra, dec, pa in zip(ra_outflows, dec_outflows, pa_outflows):
             ax.plot(ra, dec, transform=ax.get_transform('fk5'),
@@ -1854,17 +2188,18 @@ def plot_overview(data, wcs=None, plotfile="plot_overview.pdf",
         plt.savefig(plotfile)
 
 
-def plot_stat_feedback(stat_list, ax=None, catalog="spitzer_orion.fit",
+def plot_stat_feedback(stat_list, test=False, ax=None, catalog="spitzer_orion.fit",
         return_cols=["_RAJ2000", "_DEJ2000", "Cl"],
         ra_col="_RAJ2000", dec_col="_DEJ2000",
         region_names=["davis_omc23", "davis_ngc1977"],
         regions_from_stat_list=True,
         subcube_dir = "subcubes/", feedback_mode='count', within_data=False,
-        errorbar_kwargs={}, scatter_kwargs={},
+        errorbar_kwargs={}, scatter_kwargs={}, label_kwargs={}, marker=None,
         surface_density=True, feedback_label=r"n$_{\rm YSO}$ (deg$^{-2}$)",
         logx=False, logy=False, mpl_style="presentation",
-        return_ax=True,return_eb=False, plot_file="plot_stat_feedback.pdf",
-        refit=False, refit_kwargs_list=[{}]):
+        return_ax=False,return_eb=False, plot_file="plot_stat_feedback.pdf",
+        refit=False, refit_kwargs_list=[{}],
+        return_feedback=True, ii_lowerlimit=None):
     """
     Make scatter plot of subregion stat metric
     vs. feedback metric:
@@ -1875,6 +2210,9 @@ def plot_stat_feedback(stat_list, ax=None, catalog="spitzer_orion.fit",
     stat_list and region_names should be in the same order,
     or can automatically find region_names from stat_list if
     regions_from_stat_list = True
+
+    ii_lowerlimit indicates the indices of stat_list which should be marked as 
+    lower limits in the scatter plot.
     """
     # import subregion 
     matplotlib.style.use(mpl_style)
@@ -1883,9 +2221,10 @@ def plot_stat_feedback(stat_list, ax=None, catalog="spitzer_orion.fit",
         
         fig = plt.figure(figsize=(6,6))
         ax = plt.subplot(111)
-    
+
     if "scf" in stat_list[0]:
-        stat_measure, stat_measure_err = slope_scf(stat_list)
+        stat_measure, stat_measure_err = slope_scf(stat_list, refit=refit,
+                refit_kwargs_list=refit_kwargs_list)
         stat_label = "SCF Slope"
     elif "pspec" in stat_list[0]:
         stat_measure, stat_measure_err = slope_pspec(stat_list, refit=refit,
@@ -1900,44 +2239,101 @@ def plot_stat_feedback(stat_list, ax=None, catalog="spitzer_orion.fit",
         for stat_file in stat_list:
             for region_name in region_names_choices:
                 if region_name in stat_file:
+                   # print(region_name, stat_file)
                    region_names.append(region_name) 
                 
     feedback_list = []
-    print("Looping over regions.\n")
-    for region_name in region_names:
-        print("Now doing region {}.\n".format(region_name))
-        
 
-        feedback_table = region_stars(region_name=region_name, table=catalog,
-                return_cols=return_cols, ra_col=ra_col,
-                dec_col=dec_col, subcube_dir=subcube_dir, within_data=within_data)
+    if not test:
 
-        if feedback_mode == 'count':
-            feedback_total = len(feedback_table.as_array())
+        print("Looping over regions.\n")
+        for region_name in region_names:
+            print("Now doing region {}.\n".format(region_name))
             
-        elif feedback_mode == 'sum':
-            print(feedback_table)
-            feedback_total = feedback_table.sum()
+
+            feedback_table = region_stars(region_name=region_name, table=catalog,
+                    return_cols=return_cols, ra_col=ra_col,
+                    dec_col=dec_col, subcube_dir=subcube_dir, within_data=within_data)
+
+            if feedback_mode == 'count':
+                feedback_total = len(feedback_table.as_array())
+                
+            elif feedback_mode == 'sum':
+                print(feedback_table)
+                feedback_total = feedback_table.sum()
+            
+            elif feedback_mode == 'area':
+                area = region_area(unit="deg", dist=414*u.pc,
+                    region_name=region_name, subcube_dir="subcubes/")
+                feedback_total = area.value
+
+            if surface_density:
+                print("Calculating surface density.\n")
+                area = region_area(unit="deg", dist=414*u.pc,
+                    region_name=region_name, subcube_dir="subcubes/")
+
+                feedback_total = feedback_total / area.value
+
+            feedback_list.append(feedback_total)
+
         
-        elif feedback_mode == 'area':
-            area = region_area(unit="deg", dist=414*u.pc,
-                region_name=region_name, subcube_dir="subcubes/")
-            feedback_total = area.value
+        print("Plotting.\n")
 
-        if surface_density:
-            print("Calculating surface density.\n")
-            area = region_area(unit="deg", dist=414*u.pc,
-                region_name=region_name, subcube_dir="subcubes/")
 
-            feedback_total = feedback_total / area.value
+        # print("Error is ", stat_measure_err)
+        # print(feedback_list, stat_measure)
+        if ii_lowerlimit:
+            ii_ll = ii_lowerlimit
+            ii_rest = [not i for i in ii_lowerlimit]
 
-        feedback_list.append(feedback_total)
+            print(scatter_kwargs)
+            edgecolors = scatter_kwargs.pop('edgecolor', None)
+            ecolors = errorbar_kwargs.pop('ecolor', None)
+            facecolors = scatter_kwargs.pop('facecolor', None)
+            
 
-    
-    print("Plotting.\n")
-    eb = ax.errorbar(feedback_list, stat_measure, yerr=stat_measure_err, fmt="None",
-            **errorbar_kwargs)
-    sc = ax.scatter(feedback_list, stat_measure, **scatter_kwargs)
+
+            eb_rest = ax.errorbar(np.array(feedback_list)[ii_rest],
+                    np.array(stat_measure)[ii_rest],
+                    yerr=np.array(stat_measure_err)[ii_rest], fmt="None",
+                    ecolor=np.array(ecolors)[ii_rest], zorder=1,
+                    **errorbar_kwargs)
+
+            sc_rest = mscatter(np.array(feedback_list)[ii_rest],
+                    np.array(stat_measure)[ii_rest], ax=ax, m=np.array(marker)[ii_rest], 
+                    edgecolor=np.array(edgecolors)[ii_rest],
+                    facecolor=np.array(facecolors)[ii_rest], zorder=2,
+                    **scatter_kwargs)
+                    
+            # sc_ll = ax.scatter(np.array(feedback_list)[ii_ll],
+            #         np.array(stat_measure)[ii_ll],
+            #         color=np.array(colors)[ii_ll], marker=">", **scatter_kwargs)
+
+            for x,y,c in zip(
+                    np.array(feedback_list)[ii_ll],
+                    np.array(stat_measure)[ii_ll],
+                    np.array(edgecolors)[ii_ll]):
+                ax.annotate("", xy=(0.005,y), xycoords='data',
+                        xytext=(x, y), textcoords='data',
+                        arrowprops=dict(
+                            arrowstyle="->", connectionstyle="arc3", color=c))
+
+            
+            eb_ll = ax.errorbar(np.array(feedback_list)[ii_ll],
+                    np.array(stat_measure)[ii_ll],
+                    yerr=np.array(stat_measure_err)[ii_ll], fmt="None",
+                    ecolor=np.array(ecolors)[ii_ll], zorder=1,
+                    **errorbar_kwargs) 
+            sc_ll = mscatter(np.array(feedback_list)[ii_ll],
+                    np.array(stat_measure)[ii_ll], ax=ax, m=np.array(marker)[ii_ll],
+                    facecolor=np.array(facecolors)[ii_ll],
+                    edgecolor=np.array(edgecolors)[ii_ll], zorder=2, **scatter_kwargs)
+
+        else:
+            eb = ax.errorbar(feedback_list, stat_measure, yerr=stat_measure_err, fmt="None",
+                    zorder=1, **errorbar_kwargs)
+            # sc = ax.scatter(feedback_list, stat_measure, zorder=2, **scatter_kwargs)
+            sc = mscatter(feedback_list, stat_measure, ax=ax, m=marker, zorder=2, **scatter_kwargs)
 
     if logy:
         ax.set_yscale('log')
@@ -1946,8 +2342,8 @@ def plot_stat_feedback(stat_list, ax=None, catalog="spitzer_orion.fit",
         ax.set_xscale('log')
         
    
-    xla = ax.set_xlabel("{}".format(feedback_label))
-    yla = ax.set_ylabel(stat_label)
+    xla = ax.set_xlabel("{}".format(feedback_label), **label_kwargs)
+    yla = ax.set_ylabel(stat_label, **label_kwargs)
 
     
     if return_ax:
@@ -1957,9 +2353,36 @@ def plot_stat_feedback(stat_list, ax=None, catalog="spitzer_orion.fit",
             return ax
         
     else: 
+
         plt.tight_layout()
         plt.savefig(plot_file)
 
+        if return_feedback:
+            print(region_names)
+            print(stat_measure)
+            print(feedback_list)
+            return feedback_list
+
+
+
+def mscatter(x,y,ax=None, m=None, **kw):
+    import matplotlib.markers as mmarkers
+    if not ax: ax=plt.gca()
+    if (m is not None) and (len(m)==len(x)):
+        sc = ax.scatter(x,y,**kw)
+        paths = []
+        for marker in m:
+            if isinstance(marker, mmarkers.MarkerStyle):
+                marker_obj = marker
+            else:
+                marker_obj = mmarkers.MarkerStyle(marker)
+            path = marker_obj.get_path().transformed(
+                        marker_obj.get_transform())
+            paths.append(path)
+        sc.set_paths(paths)
+    else:
+        sc = ax.scatter(x,y,m=m**kw)
+    return sc
 
 # def region_feedback(column="Pdot_shell_mid", table="feedback_table.ecsv",
 #         region_list=["North", "Central", "South", "South_no_outliers", "L1641N"],
@@ -1995,6 +2418,7 @@ def run_scf(cube, size=None, roll_lags=np.arange(-15,15+1,3),
     scf.run(boundary='cut', xunit=xunit, **kwargs)
     if pickle_file:   
         scf.save_results(pickle_file, keep_data=keep_data)
+    return scf
 
 def run_pspec(cube, distance=414*u.pc,
         run_kwargs={'xunit':u.pix**-1, 'beam_correct':False, 'apodize_kernel':"tukey"},
@@ -2125,15 +2549,19 @@ def dist_scf(scf_list, weight=True, weight_correct=True):
     
     return dist_array
 
-def slope_scf(scf_list):
+def slope_scf(scf_list, refit=False, refit_kwargs_list=[{}]):
     try:
         scf_list = [pickle.load(open(f, 'rb')) for f in scf_list]
     except:
         pass
     
+    if refit:       
+        for scf,refit_kwargs in zip(pspec_list, refit_kwargs_list):
+            scf.fit_plaw(**refit_kwargs)
+
     slope = np.array([scf.fit.params[1] for scf in scf_list])
     slope_err = np.array([scf.fit.bse[1] for scf in scf_list])
-
+    
     return slope, slope_err
 
 def dist_pspec(pspec_list):
@@ -2179,7 +2607,7 @@ def slope_pspec(pspec_list, refit=False, refit_kwargs_list=[{}]):
 def plot_colorcolor(stat_list, ax=None, return_ax=True,
         dist_func=dist_pca, dist_func_kwargs={},
         region_names=None, mpl_style="presentation",
-        imshow_kwargs={},
+        imshow_kwargs={}, test=False,
         savefig_kwargs={"dpi":300}, plot_file="color_color.pdf"):
     """
     stat_list: can be a list of str filenames pointing to pickled results
@@ -2188,7 +2616,10 @@ def plot_colorcolor(stat_list, ax=None, return_ax=True,
     dist_func_args: optional, dict of keyword arguments to dist_func.
     """
     matplotlib.style.use(mpl_style)
-    dist_array = dist_func(stat_list, **dist_func_kwargs)
+    if test:
+        dist_array = np.ones((len(stat_list), len(stat_list)))
+    else:
+        dist_array = dist_func(stat_list, **dist_func_kwargs)
 
     if return_ax is None:
         fig, ax = plt.subplots(1, figsize=(8,8))
@@ -2199,9 +2630,12 @@ def plot_colorcolor(stat_list, ax=None, return_ax=True,
 
     xticks = ax.set_xticks(np.arange(len(stat_list)))
     yticks = ax.set_yticks(np.arange(len(stat_list)))
-
-    xtick_labels = ax.set_xticklabels(region_names, rotation='vertical')
-    ytick_labels = ax.set_yticklabels(region_names)
+    
+    try:
+        xtick_labels = ax.set_xticklabels(region_names, rotation='vertical')
+        ytick_labels = ax.set_yticklabels(region_names)
+    except:
+        pass
 
     # cbar = fig.colorbar(im)
     
@@ -2294,6 +2728,9 @@ def plot_scf_spectrum(scf_list, ax=None, return_ax=False, plot_file="scf_spectru
         colors=[None], labels=[None], mpl_style='presentation',
         scale_lags=1, xlabel="Lag [pixels]", ylabel="SCF",
         plot_points=True, plot_fit=True,
+        twin_axis_ticks=np.array([0.02,0.05,0.1]),
+        twin_axis_labels=True,
+        ax2_units="pc", twin_axis=True,
         errorbar_kwargs={}, plot_kwargs={},
         show_fitrange=False, show_beamwidth=False):
 
@@ -2327,6 +2764,31 @@ def plot_scf_spectrum(scf_list, ax=None, return_ax=False, plot_file="scf_spectru
                      label=r"{}: $\alpha = {} \pm {}$".format(
                          label, round(scf.fit.params[1],3), round(scf.fit.bse[1],3)),
                      **plot_kwargs)
+
+        if twin_axis:
+            ax2 = ax.twiny()
+            ax2.set_xlim(ax.get_xlim())
+            print(ax2.get_xlim())
+
+            ax2_tick_locations = np.array(twin_axis_ticks)
+            print(ax2_tick_locations)
+            if ax2_units == 'arcmin':
+                pix = arcmin_to_pix(ax2_tick_locations)
+                ax2.set_xlabel(r"$\theta$ [arcmin]")
+
+            elif ax2_units == 'pc':
+                pix = pc_to_pix(ax2_tick_locations)
+                
+                ax2.set_xlabel(r"$r$ [pc]")
+
+            ax2.set_xscale('log')
+            print(pix)
+            ax2.set_xticks(pix)
+            ax2.set_xticklabels(["{0:g}".format(a) for a in ax2_tick_locations])
+            ax2.get_xaxis().set_tick_params(which='minor', size=0)
+            ax2.get_xaxis().set_tick_params(which='minor', width=0) 
+            if not twin_axis_labels:
+                ax2.set_visible('False')
 
         if show_fitrange:
             ax.axvline(scf.xlow.value, ymax=0.2)
@@ -2526,6 +2988,12 @@ def arcmin_to_logk(arcmin, arcsec_per_pix=2.):
 def pc_to_logk(pc, arcsec_per_pix=2., dist=414*u.pc):
     logk = np.log10(1/(206265. * pc / dist.value / arcsec_per_pix))
     return logk
+def arcmin_to_pix(arcmin, arcsec_per_pix=2.):
+    pix = arcmin*60/arcsec_per_pix
+    return pix 
+def pc_to_pix(pc, arcsec_per_pix=2., dist=414*u.pc):
+    pix = 206265. * pc / dist.value / arcsec_per_pix
+    return pix
 
 if __name__ == "__main__":
     main()

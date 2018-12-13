@@ -5,6 +5,10 @@ import astropy.units as u
 ## From the PCA study of OMC1 by Ungerechts et al. 1997
 ungerechts_omc1_ra = [83.85105467*u.deg, 83.77605467*u.deg]
 ungerechts_omc1_dec = [-5.492928*u.deg, -5.292928*u.deg]
+
+### Expanded omc1 region (2x width) from above in order to fit SCF lags of up to 200 pixels.
+omc1_ra = [83.88855467*u.deg, 83.73855467*u.deg] 
+omc1_dec = [-5.492928*u.deg, -5.292928*u.deg]
 ## From Berne et al. 2014 IRAM survey of Orion A
 # berne_dec = [-5.8*u.deg, -4.95*u.deg]
 # berne_ra = [5.62*15*u.deg, 5.554*15*u.deg]
@@ -38,6 +42,7 @@ davis_v380_dec = [-6.91666667*u.deg, -6.616666667*u.deg]
 
 regions_ra = [
     ungerechts_omc1_ra, 
+    # omc1_ra,
     # berne_ra, 
     jrf_north_ra, 
     jrf_central_ra, 
@@ -54,6 +59,7 @@ regions_ra = [
 
 regions_dec = [
     ungerechts_omc1_dec, 
+    # omc1_dec,
     # berne_dec, 
     jrf_north_dec, 
     jrf_central_dec, 
@@ -69,6 +75,7 @@ regions_dec = [
     ]
 regions_name = [
    'ungerechts_omc1', 
+   # 'o_omc1',
    # 'berne', 
    'jrf_north', 
    'jrf_central', 
